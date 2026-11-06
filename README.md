@@ -39,5 +39,4 @@ Node.js, Express, @sap/hana-client, Chart.js, Git
 ## Security notes
 No credentials are stored in the repo; configuration is read from environment variables.
 
-## Author
-Anastasiya Kupreichyk — [LinkedIn link]
+
