@@ -1,0 +1,34 @@
+-- View: V_BOOKINGS_PERFORMANCE_MONTHLY
+-- Purpose: Monthly revenue performance per class category, 
+-- with a traffic-light indicator (Green/Yellow/Red) based on revenue thresholds
+
+VIEW "V_BOOKINGS_PERFORMANCE_MONTHLY" AS
+SELECT
+    BOOKING_YEAR,
+    BOOKING_MONTH,
+    CLASS_CATEGORY,
+    TOTAL_REVENUE,
+    TOTAL_BOOKINGS,
+    CASE
+        WHEN TOTAL_REVENUE >= 100 THEN 'Green'
+        WHEN TOTAL_REVENUE >= 50  THEN 'Yellow'
+        ELSE 'Red'
+    END AS PERFORMANCE_STATUS
+FROM (
+    SELECT
+        YEAR(b.BOOKING_DATE)  AS BOOKING_YEAR,
+        MONTH(b.BOOKING_DATE) AS BOOKING_MONTH,
+        c.CATEGORY            AS CLASS_CATEGORY,
+        SUM(c.PRICE)          AS TOTAL_REVENUE,
+        COUNT(*)              AS TOTAL_BOOKINGS
+    FROM BOOKINGS b
+    INNER JOIN CLASSES c
+        ON b.CLASS_ID = c.ID
+    WHERE b.STATUS <> 'CANCELLED'
+    GROUP BY
+        YEAR(b.BOOKING_DATE),
+        MONTH(b.BOOKING_DATE),
+        c.CATEGORY
+);
+
+

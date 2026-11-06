@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_BOOKINGS_WITH_ANALYTICS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_BOOKINGS_WITH_ANALYTICS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CV_BOOKINGS_WITH_CLASSES">
+    <resourceUri>CV_BOOKINGS_WITH_CLASSES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="BOOKING_DATE"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="PRICE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="CV_BOOKINGS_WITH_CLASSES"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:WindowFunctionView" id="WindowFunction_1">
+    <viewAttributes>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="BOOKING_DATE"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="PRICE" aggregationType="sum"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="NAME" source="NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY" source="CATEGORY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BOOKING_DATE" source="BOOKING_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PRICE" source="PRICE"/>
+    </input>
+    <functions>
+      <function name="SUM">
+        <arguments>
+          <argument>&quot;PRICE&quot;</argument>
+        </arguments>
+        <frame type="ROWS">
+          <start type="CURRENT_ROW"/>
+          <end type="CURRENT_ROW"/>
+        </frame>
+        <resultColumn datatype="DOUBLE">RUNNING_TOTAL</resultColumn>
+      </function>
+      <function name="RANK">
+        <arguments/>
+        <resultColumn datatype="DOUBLE">SALES_RANK</resultColumn>
+      </function>
+      <function name="AVG">
+        <arguments>
+          <argument>&quot;PRICE&quot;</argument>
+        </arguments>
+        <frame type="ROWS">
+          <start type="PRECEDING">2</start>
+          <end type="CURRENT_ROW"/>
+        </frame>
+        <resultColumn datatype="DOUBLE">MOVING_AVG_3M</resultColumn>
+      </function>
+      <function name="LAG">
+        <arguments>
+          <argument>&quot;PRICE&quot;</argument>
+          <argument>1</argument>
+        </arguments>
+        <resultColumn datatype="DOUBLE">WINDOW_FUNCTION_COLUMN</resultColumn>
+      </function>
+      <function name="LAG">
+        <arguments>
+          <argument>&quot;PRICE&quot;</argument>
+          <argument>1</argument>
+        </arguments>
+        <resultColumn datatype="DOUBLE">PREVIOUS_MONTH_SALES</resultColumn>
+      </function>
+    </functions>
+    <orderAttributes>
+      <orderAttribute direction="DESC">PRICE</orderAttribute>
+    </orderAttributes>
+    <partitionAttributes/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="RUNNING_TOTAL"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="BOOKING_DATE"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="PRICE"/>
+      <viewAttribute id="SALES_RANK"/>
+      <viewAttribute id="MOVING_AVG_3M"/>
+      <viewAttribute id="WINDOW_FUNCTION_COLUMN"/>
+      <viewAttribute id="PREVIOUS_MONTH_SALES"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="MOM_CHANGE" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>&quot;PRICE&quot; - &quot;PREVIOUS_MONTH_SALES&quot;</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="MOM_CHANGE_PCT" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>CASE
+    WHEN &quot;PREVIOUS_MONTH_SALES&quot; = 0
+         OR &quot;PREVIOUS_MONTH_SALES&quot; IS NULL
+    THEN 0
+    ELSE
+        ((&quot;PRICE&quot; - &quot;PREVIOUS_MONTH_SALES&quot;)
+        / &quot;PREVIOUS_MONTH_SALES&quot;) * 100
+END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="WindowFunction_1"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_2">
+  <attributes>
+    <attribute id="NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="Projection_2" columnName="NAME"/>
+    </attribute>
+    <attribute id="CATEGORY" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY"/>
+      <keyMapping columnObjectName="Projection_2" columnName="CATEGORY"/>
+    </attribute>
+    <attribute id="BOOKING_DATE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BOOKING_DATE"/>
+      <keyMapping columnObjectName="Projection_2" columnName="BOOKING_DATE"/>
+    </attribute>
+    <attribute id="STATUS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="Projection_2" columnName="STATUS"/>
+    </attribute>
+    <attribute id="MOM_CHANGE" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MOM_CHANGE"/>
+      <keyMapping columnObjectName="Projection_2" columnName="MOM_CHANGE"/>
+    </attribute>
+    <attribute id="MOM_CHANGE_PCT" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MOM_CHANGE_PCT"/>
+      <keyMapping columnObjectName="Projection_2" columnName="MOM_CHANGE_PCT"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="RUNNING_TOTAL" order="1" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="RUNNING_TOTAL"/>
+      <measureMapping columnObjectName="Projection_2" columnName="RUNNING_TOTAL"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="PRICE" order="6" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PRICE"/>
+      <measureMapping columnObjectName="Projection_2" columnName="PRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="SALES_RANK" order="7" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="SALES_RANK"/>
+      <measureMapping columnObjectName="Projection_2" columnName="SALES_RANK"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="MOVING_AVG_3M" order="8" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="MOVING_AVG_3M"/>
+      <measureMapping columnObjectName="Projection_2" columnName="MOVING_AVG_3M"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="WINDOW_FUNCTION_COLUMN" order="9" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="WINDOW_FUNCTION_COLUMN"/>
+      <measureMapping columnObjectName="Projection_2" columnName="WINDOW_FUNCTION_COLUMN"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="PREVIOUS_MONTH_SALES" order="10" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PREVIOUS_MONTH_SALES"/>
+      <measureMapping columnObjectName="Projection_2" columnName="PREVIOUS_MONTH_SALES"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="447"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="WindowFunction_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="102" y="322"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

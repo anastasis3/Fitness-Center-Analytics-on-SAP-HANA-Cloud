@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_CLASSES_FILTERED" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Projection" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_CLASSES_FILTERED"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CLASSES">
+    <resourceUri>CLASSES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews/>
+<logicalModel id="CLASSES" filterExpressionLanguage="SQL">
+  <attributes>
+    <attribute id="NAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="CLASSES" columnName="NAME"/>
+    </attribute>
+    <attribute id="CATEGORY" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY"/>
+      <keyMapping columnObjectName="CLASSES" columnName="CATEGORY"/>
+    </attribute>
+    <attribute id="TRAINER_ID" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TRAINER_ID"/>
+      <keyMapping columnObjectName="CLASSES" columnName="TRAINER_ID"/>
+    </attribute>
+    <attribute id="CLASS_DATE" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CLASS_DATE"/>
+      <keyMapping columnObjectName="CLASSES" columnName="CLASS_DATE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="PRICE_CATEGORY" order="2" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="SQL" length="13">
+        <formula>CASE 
+    WHEN  &quot;PRICE&quot;  &gt;= 20 THEN 'Premium Class'
+    WHEN &quot;PRICE&quot; &gt;= 12 THEN 'Standard Class'
+    ELSE 'Budget Class'
+END</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures>
+    <measure id="PRICE" order="6" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PRICE"/>
+      <measureMapping columnObjectName="CLASSES" columnName="PRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="CAPACITY" order="8" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="CAPACITY"/>
+      <measureMapping columnObjectName="CLASSES" columnName="CAPACITY"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures>
+    <measure id="TOTAL_VALUE" order="1" aggregationType="sum" measureType="simple" datatype="DECIMAL" length="13" scale="2" expressionLanguage="SQL">
+      <formula>&quot;PRICE&quot; * &quot;CAPACITY&quot;</formula>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+  <localDimensions/>
+
+  <filter>&quot;CLASS_DATE&quot; &gt;= '2026-09-01' AND &quot;PRICE&quot; &gt; 0</filter>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="100" y="105"/>
+    
+      <rectangleSize width="160"/>
+    </shape></shapes>
+</layout>
+</Calculation:scenario>

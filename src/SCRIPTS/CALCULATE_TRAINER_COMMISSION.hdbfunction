@@ -1,0 +1,21 @@
+-- Scalar Function: Calculate Trainer Commission
+-- Business purpose: given the price of a class and a commission rate,
+-- returns how much the trainer earns from that class
+
+
+FUNCTION "CALCULATE_TRAINER_COMMISSION"(
+    IN_CLASS_PRICE      DECIMAL(10,2),
+    IN_COMMISSION_RATE  DECIMAL(5,2)
+)
+RETURNS OUT_COMMISSION DECIMAL(10,2)
+LANGUAGE SQLSCRIPT
+AS
+BEGIN
+    -- Handle edge cases: negative or missing values default to 0
+    IF :IN_CLASS_PRICE IS NULL OR :IN_CLASS_PRICE < 0
+       OR :IN_COMMISSION_RATE IS NULL OR :IN_COMMISSION_RATE < 0 THEN
+        OUT_COMMISSION := 0;
+    ELSE
+        OUT_COMMISSION := ROUND(:IN_CLASS_PRICE * (:IN_COMMISSION_RATE / 100), 2);
+    END IF;
+END;

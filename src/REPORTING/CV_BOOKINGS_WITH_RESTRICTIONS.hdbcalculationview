@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Privilege="http://www.sap.com/ndb/BiModelPrivilege.ecore" id="CV_BOOKINGS_WITH_RESTRICTIONS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_BOOKINGS_WITH_RESTRICTIONS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CV_BOOKINGS_WITH_CLASSES">
+    <resourceUri>CV_BOOKINGS_WITH_CLASSES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="BookingJoinClasses">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="MEMBER_ID"/>
+      <viewAttribute id="CLASS_ID"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="PRICE"/>
+      <viewAttribute id="TRAINER_SHARE"/>
+      <viewAttribute id="TRAINER_ID"/>
+      <viewAttribute id="BOOKING_DATE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="CV_BOOKINGS_WITH_CLASSES"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="BookingJoinClasses">
+  <attributes>
+    <attribute id="NAME" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="BookingJoinClasses" columnName="NAME"/>
+    </attribute>
+    <attribute id="CATEGORY" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY"/>
+      <keyMapping columnObjectName="BookingJoinClasses" columnName="CATEGORY"/>
+    </attribute>
+    <attribute id="STATUS" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="BookingJoinClasses" columnName="STATUS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="PRICE" order="3" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PRICE"/>
+      <measureMapping columnObjectName="BookingJoinClasses" columnName="PRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures>
+    <measure id="CONFIRMED_REVENUE" order="5" aggregationType="sum" datatype="DECIMAL" length="10" scale="2" baseMeasure="PRICE" restrictionExpressionLanguage="SQL">
+      <descriptions defaultDescription=""/>
+      <restriction logicalOperator="AND">
+        <filter xsi:type="Privilege:AttributeFilter" attributeName="STATUS" datatype="NVARCHAR">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="CONFIRMED"/>
+        </filter>
+        <attributeName>STATUS</attributeName>
+      </restriction>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="ATTENDED_REVENUE" order="6" aggregationType="sum" datatype="DECIMAL" length="10" scale="2" baseMeasure="PRICE" restrictionExpressionLanguage="SQL">
+      <descriptions defaultDescription=""/>
+      <restriction logicalOperator="AND">
+        <filter xsi:type="Privilege:AttributeFilter" attributeName="STATUS" datatype="NVARCHAR">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="ATTENDED"/>
+        </filter>
+        <attributeName>STATUS</attributeName>
+      </restriction>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="CANCELLED_REVENUE" order="7" aggregationType="sum" datatype="DECIMAL" length="10" scale="2" baseMeasure="PRICE" restrictionExpressionLanguage="SQL">
+      <descriptions defaultDescription=""/>
+      <restriction logicalOperator="AND">
+        <filter xsi:type="Privilege:AttributeFilter" attributeName="STATUS" datatype="NVARCHAR">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="CANCELLED"/>
+        </filter>
+        <attributeName>STATUS</attributeName>
+      </restriction>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </restrictedMeasures>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="BookingJoinClasses" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="203"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

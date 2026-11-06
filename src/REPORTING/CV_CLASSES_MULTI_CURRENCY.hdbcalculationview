@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_CLASSES_MULTI_CURRENCY" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_CLASSES_MULTI_CURRENCY"/>
+<localVariables>
+  <variable id="IP_TARGET_CURRENCY" parameter="true">
+    <descriptions defaultDescription=""/>
+    <variableProperties datatype="NVARCHAR" length="3" mandatory="true" defaultValue="USD">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="SingleValue"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CLASSES">
+    <resourceUri>CLASSES</resourceUri>
+  </DataSource>
+  <DataSource id="EXCHANGE_RATES">
+    <resourceUri>EXCHANGE_RATES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_classes">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="TRAINER_ID"/>
+      <viewAttribute id="PRICE"/>
+      <viewAttribute id="CLASS_DATE"/>
+      <viewAttribute id="CAPACITY"/>
+      <viewAttribute id="CURRENCY"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="CLASSES"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_rates" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="SOURCE_CURRENCY"/>
+      <viewAttribute id="TARGET_CURRENCY"/>
+      <viewAttribute id="VALID_FROM"/>
+      <viewAttribute id="RATE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="EXCHANGE_RATES"/>
+    <filter>&quot;TARGET_CURRENCY&quot; = '$$IP_TARGET_CURRENCY$$'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_classes_exchange" cardinality="CN_N" joinType="inner" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="TRAINER_ID" aggregationType="sum"/>
+      <viewAttribute id="PRICE" aggregationType="sum"/>
+      <viewAttribute id="CLASS_DATE"/>
+      <viewAttribute id="CAPACITY" aggregationType="sum"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="VALID_FROM"/>
+      <viewAttribute id="RATE" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$SOURCE_CURRENCY$CURRENCY"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Projection_rates">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALID_FROM" source="VALID_FROM"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RATE" source="RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$SOURCE_CURRENCY$CURRENCY" source="SOURCE_CURRENCY"/>
+    </input>
+    <input node="Projection_classes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="NAME" source="NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY" source="CATEGORY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TRAINER_ID" source="TRAINER_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PRICE" source="PRICE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CLASS_DATE" source="CLASS_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CAPACITY" source="CAPACITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$SOURCE_CURRENCY$CURRENCY" source="CURRENCY"/>
+    </input>
+    <filter>&quot;VALID_FROM&quot; &lt;= &quot;CLASS_DATE&quot;</filter>
+    <joinAttribute name="JOIN$SOURCE_CURRENCY$CURRENCY"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_valid" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="TRAINER_ID"/>
+      <viewAttribute id="PRICE"/>
+      <viewAttribute id="CLASS_DATE"/>
+      <viewAttribute id="CAPACITY"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="VALID_FROM"/>
+      <viewAttribute id="RATE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Join_classes_exchange"/>
+  
+    <filter>&quot;VALID_FROM&quot; &lt;= &quot;CLASS_DATE&quot;</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:RankView" id="Rank_1">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="TRAINER_ID" aggregationType="sum"/>
+      <viewAttribute id="PRICE" aggregationType="sum"/>
+      <viewAttribute id="CLASS_DATE"/>
+      <viewAttribute id="CAPACITY" aggregationType="sum"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="VALID_FROM"/>
+      <viewAttribute id="RATE" aggregationType="sum"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Projection_valid"/>
+    <rankingFilter type="RANK" offset="1" offsetReference="FRONT" dynamicPartitionAttributes="false">
+      <partitionViewAttributeName id="NAME"/>
+      <partitionViewAttributeName id="CLASS_DATE"/>
+      <order byViewAttributeName="VALID_FROM" direction="DESC"/>
+    </rankingFilter>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Rank_1">
+  <attributes>
+    <attribute id="NAME" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="Rank_1" columnName="NAME"/>
+    </attribute>
+    <attribute id="CATEGORY" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY"/>
+      <keyMapping columnObjectName="Rank_1" columnName="CATEGORY"/>
+    </attribute>
+    <attribute id="CLASS_DATE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CLASS_DATE"/>
+      <keyMapping columnObjectName="Rank_1" columnName="CLASS_DATE"/>
+    </attribute>
+    <attribute id="CURRENCY" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CURRENCY"/>
+      <keyMapping columnObjectName="Rank_1" columnName="CURRENCY"/>
+    </attribute>
+    <attribute id="VALID_FROM" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="VALID_FROM"/>
+      <keyMapping columnObjectName="Rank_1" columnName="VALID_FROM"/>
+    </attribute>
+    <attribute id="RATE" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="RATE"/>
+      <keyMapping columnObjectName="Rank_1" columnName="RATE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="TARGET_CURR" order="10" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="SQL" length="3">
+        <formula>'$$IP_TARGET_CURRENCY$$'</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures>
+    <measure id="PRICE" order="3" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PRICE"/>
+      <measureMapping columnObjectName="Rank_1" columnName="PRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="CAPACITY" order="5" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="CAPACITY"/>
+      <measureMapping columnObjectName="Rank_1" columnName="CAPACITY"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures>
+    <measure id="PRICE_CONVERTED" order="9" aggregationType="sum" measureType="simple" datatype="DECIMAL" length="15" scale="2" expressionLanguage="SQL">
+      <formula>&quot;PRICE&quot; * &quot;RATE&quot;</formula>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="243.4012701828858" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_classes" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="646.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_rates" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="302.00000000000006" y="646.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Rank_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="243.4012701828858" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Join_classes_exchange" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222.9845370985018" y="486.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Projection_rates" modelObjectNameSpace="Join_classes_exchange" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="221"/>
+    </shape>
+    <shape modelObjectName="Projection_classes" modelObjectNameSpace="Join_classes_exchange" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="176"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_valid" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222.9845370985018" y="361.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape></shapes>
+</layout>
+</Calculation:scenario>

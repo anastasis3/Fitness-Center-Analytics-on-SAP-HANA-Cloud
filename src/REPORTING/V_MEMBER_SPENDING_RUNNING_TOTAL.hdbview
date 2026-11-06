@@ -1,0 +1,27 @@
+-- View: V_MEMBER_SPENDING_RUNNING_TOTAL
+-- Purpose: Shows cumulative spending per member over time
+-- using a window function.
+
+VIEW "V_MEMBER_SPENDING_RUNNING_TOTAL" AS
+
+SELECT
+    b.ID              AS BOOKING_ID,
+    m.NAME            AS MEMBER_NAME,
+    b.BOOKING_DATE    AS BOOKING_DATE,
+    c.PRICE           AS CLASS_PRICE,
+
+    SUM(c.PRICE) OVER (
+        PARTITION BY b.MEMBER_ID
+        ORDER BY b.BOOKING_DATE, b.ID
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS RUNNING_TOTAL
+
+FROM BOOKINGS b
+
+INNER JOIN CLASSES c
+    ON b.CLASS_ID = c.ID
+
+INNER JOIN MEMBERS m
+    ON b.MEMBER_ID = m.ID
+
+WHERE b.STATUS <> 'CANCELLED';

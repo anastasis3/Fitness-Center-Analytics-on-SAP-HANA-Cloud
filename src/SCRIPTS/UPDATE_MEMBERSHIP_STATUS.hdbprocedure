@@ -1,0 +1,36 @@
+PROCEDURE "UPDATE_MEMBERSHIP_STATUS_P"(
+    IN_MEMBER_ID INTEGER
+)
+LANGUAGE SQLSCRIPT
+AS
+BEGIN
+
+    DECLARE v_end_date DATE;
+    DECLARE v_new_status VARCHAR(20);
+    DECLARE v_rows_updated INTEGER;
+
+    -- Get the membership end date
+    SELECT END_DATE
+    INTO v_end_date
+    FROM MEMBERS
+    WHERE ID = :IN_MEMBER_ID;
+
+    -- Determine the new status
+    IF :v_end_date < CURRENT_DATE THEN
+        v_new_status := 'Expired';
+
+    ELSEIF DAYS_BETWEEN(CURRENT_DATE, :v_end_date) <= 7 THEN
+        v_new_status := 'Expiring Soon';
+
+    ELSE
+        v_new_status := 'Active';
+    END IF;
+
+    -- Update the member status
+    UPDATE MEMBERS
+    SET STATUS = :v_new_status
+    WHERE ID = :IN_MEMBER_ID;
+
+    v_rows_updated := ::ROWCOUNT;
+
+END;

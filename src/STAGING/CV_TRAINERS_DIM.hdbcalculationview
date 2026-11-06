@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_TRAINERS_DIM" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Projection" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_TRAINERS_DIM"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="TRAINERS">
+    <resourceUri>TRAINERS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews/>
+<logicalModel id="TRAINERS">
+  <attributes>
+    <attribute id="TRAINERS_ID" order="1" displayAttribute="false" attributeHierarchyActive="false" key="true">
+      <descriptions defaultDescription="ID"/>
+      <keyMapping columnObjectName="TRAINERS" columnName="ID"/>
+    </attribute>
+    <attribute id="TRAINERS_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="TRAINERS" columnName="NAME"/>
+    </attribute>
+    <attribute id="SPECIALIZATION" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SPECIALIZATION"/>
+      <keyMapping columnObjectName="TRAINERS" columnName="SPECIALIZATION"/>
+    </attribute>
+  
+    <attribute id="NAME" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="TRAINERS" columnName="NAME"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

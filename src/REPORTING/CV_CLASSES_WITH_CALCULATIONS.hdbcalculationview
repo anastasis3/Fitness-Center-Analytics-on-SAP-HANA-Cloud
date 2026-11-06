@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_CLASSES_WITH_CALCULATIONS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_CLASSES_WITH_CALCULATIONS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CLASSES$$$$CLASSES$$">
+    <resourceUri>CLASSES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CLASSES">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="TRAINER_ID"/>
+      <viewAttribute id="PRICE"/>
+      <viewAttribute id="CLASS_DATE"/>
+      <viewAttribute id="CAPACITY"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="REVENUE_PER_SPOT" datatype="DECIMAL" length="13" scale="1" expressionLanguage="SQL">
+        <formula>&quot;PRICE&quot; / &quot;CAPACITY&quot;</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="CLASS_SIZE" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>CASE
+    WHEN &quot;CAPACITY&quot; &gt;= 20 THEN 'Large'
+    WHEN &quot;CAPACITY&quot; &gt;= 12 THEN 'Medium'
+    ELSE 'Small'
+END</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="WEEKDAY_NAME" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>TO_VARCHAR(&quot;CLASS_DATE&quot;, 'DAY')</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="DAYS_UNTIL_CLASS" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>DAYS_BETWEEN(CURRENT_DATE, &quot;CLASS_DATE&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="CLASS_CODE" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>LEFT(&quot;CATEGORY&quot;, 3) || '-' || LPAD(TO_VARCHAR(&quot;ID&quot;), 4, '0')</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="CAPACITY_STATUS" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>CASE
+    WHEN &quot;CLASS_DATE&quot; &lt; CURRENT_DATE THEN 'Expired'
+    WHEN &quot;CAPACITY&quot; IS NULL THEN 'Unknown'
+    WHEN &quot;CAPACITY&quot; = 0 THEN 'Fully Booked'
+    ELSE 'Available'
+END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="CLASSES$$$$CLASSES$$"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="CLASSES">
+  <attributes>
+    <attribute id="NAME" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="CLASSES" columnName="NAME"/>
+    </attribute>
+    <attribute id="CLASS_CODE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CLASS_CODE"/>
+      <keyMapping columnObjectName="CLASSES" columnName="CLASS_CODE"/>
+    </attribute>
+    <attribute id="CATEGORY" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY"/>
+      <keyMapping columnObjectName="CLASSES" columnName="CATEGORY"/>
+    </attribute>
+    <attribute id="CLASS_SIZE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CLASS_SIZE"/>
+      <keyMapping columnObjectName="CLASSES" columnName="CLASS_SIZE"/>
+    </attribute>
+    <attribute id="REVENUE_PER_SPOT" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REVENUE_PER_SPOT"/>
+      <keyMapping columnObjectName="CLASSES" columnName="REVENUE_PER_SPOT"/>
+    </attribute>
+    <attribute id="WEEKDAY_NAME" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="WEEKDAY_NAME"/>
+      <keyMapping columnObjectName="CLASSES" columnName="WEEKDAY_NAME"/>
+    </attribute>
+    <attribute id="DAYS_UNTIL_CLASS" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DAYS_UNTIL_CLASS"/>
+      <keyMapping columnObjectName="CLASSES" columnName="DAYS_UNTIL_CLASS"/>
+    </attribute>
+    <attribute id="CAPACITY_STATUS" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CAPACITY_STATUS"/>
+      <keyMapping columnObjectName="CLASSES" columnName="CAPACITY_STATUS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="PRICE" order="6" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PRICE"/>
+      <measureMapping columnObjectName="CLASSES" columnName="PRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="CLASSES" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="202"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

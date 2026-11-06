@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_BOOKINGS_COMBINED" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_BOOKINGS_COMBINED"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="BOOKINGS">
+    <resourceUri>BOOKINGS</resourceUri>
+  </DataSource>
+  <DataSource id="Canceled_Bookings$$$$BOOKINGS$$">
+    <resourceUri>BOOKINGS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Active_Bookings" filterExpressionLanguage="SQL">
+    <descriptions>
+      <comment text="Active booking"/>
+    </descriptions>
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="MEMBER_ID"/>
+      <viewAttribute id="CLASS_ID"/>
+      <viewAttribute id="BOOKING_DATE"/>
+      <viewAttribute id="STATUS"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="BOOKING_GROUP" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+        <formula>'ACTIVE'</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="BOOKINGS"/>
+    <filter>&quot;STATUS&quot; IN ('CONFIRMED', 'ATTENDED')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Canceled_Bookings" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="MEMBER_ID"/>
+      <viewAttribute id="CLASS_ID"/>
+      <viewAttribute id="BOOKING_DATE"/>
+      <viewAttribute id="STATUS"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="BOOKING_GROUP" datatype="NVARCHAR" length="20" expressionLanguage="SQL">
+        <formula>'CANCELLED'</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="Canceled_Bookings$$$$BOOKINGS$$"/>
+    <filter>&quot;STATUS&quot; = 'CANCELLED'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum"/>
+      <viewAttribute id="MEMBER_ID" aggregationType="sum"/>
+      <viewAttribute id="CLASS_ID" aggregationType="sum"/>
+      <viewAttribute id="BOOKING_DATE"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="BOOKING_GROUP"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Active_Bookings" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MEMBER_ID" source="MEMBER_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CLASS_ID" source="CLASS_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BOOKING_DATE" source="BOOKING_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BOOKING_GROUP" source="BOOKING_GROUP"/>
+    </input>
+    <input node="Canceled_Bookings" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MEMBER_ID" source="MEMBER_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CLASS_ID" source="CLASS_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BOOKING_DATE" source="BOOKING_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BOOKING_GROUP" source="BOOKING_GROUP"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Union_1">
+  <attributes>
+    <attribute id="MEMBER_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MEMBER_ID"/>
+      <keyMapping columnObjectName="Union_1" columnName="MEMBER_ID"/>
+    </attribute>
+    <attribute id="CLASS_ID" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CLASS_ID"/>
+      <keyMapping columnObjectName="Union_1" columnName="CLASS_ID"/>
+    </attribute>
+    <attribute id="BOOKING_DATE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BOOKING_DATE"/>
+      <keyMapping columnObjectName="Union_1" columnName="BOOKING_DATE"/>
+    </attribute>
+    <attribute id="STATUS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="Union_1" columnName="STATUS"/>
+    </attribute>
+    <attribute id="BOOKING_GROUP" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BOOKING_GROUP"/>
+      <keyMapping columnObjectName="Union_1" columnName="BOOKING_GROUP"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="ID" order="1" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="ID"/>
+      <measureMapping columnObjectName="Union_1" columnName="ID"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="221" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Active_Bookings" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="356"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Canceled_Bookings" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="302" y="356"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="221" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

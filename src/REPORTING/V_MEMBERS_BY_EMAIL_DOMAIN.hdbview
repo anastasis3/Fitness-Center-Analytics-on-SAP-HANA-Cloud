@@ -1,0 +1,17 @@
+-- View: V_MEMBERS_BY_EMAIL_DOMAIN
+-- Purpose: Filters members by Gmail email domain.
+
+VIEW "V_MEMBERS_BY_EMAIL_DOMAIN" AS
+
+SELECT
+    ID,
+    NAME,
+    EMAIL,
+    MEMBERSHIP_TYPE,
+    JOIN_DATE
+FROM MEMBERS
+WHERE EMAIL LIKE_REGEXPR '@email\.com$';
+
+
+
+

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_SALES_STAR_SCHEMA" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_SALES_STAR_SCHEMA"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CV_BOOKINGS_WITH_CLASSES">
+    <resourceUri>CV_BOOKINGS_WITH_CLASSES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_Fact">
+    <viewAttributes>
+      <viewAttribute id="ID"/>
+      <viewAttribute id="MEMBER_ID"/>
+      <viewAttribute id="CLASS_ID"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="NAME"/>
+      <viewAttribute id="CATEGORY"/>
+      <viewAttribute id="PRICE"/>
+      <viewAttribute id="TRAINER_SHARE"/>
+      <viewAttribute id="TRAINER_ID"/>
+      <viewAttribute id="BOOKING_DATE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="CV_BOOKINGS_WITH_CLASSES"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_Fact">
+  <attributes>
+    <attribute id="ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ID"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="ID"/>
+    </attribute>
+    <attribute id="MEMBER_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MEMBER_ID"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="MEMBER_ID"/>
+    </attribute>
+    <attribute id="CLASS_ID_1" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CLASS_ID_1"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="CLASS_ID"/>
+    </attribute>
+    <attribute id="STATUS" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="STATUS"/>
+    </attribute>
+    <attribute id="NAME_1" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME_1"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="NAME"/>
+    </attribute>
+    <attribute id="CATEGORY_1" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY_1"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="CATEGORY"/>
+    </attribute>
+    <attribute id="TRAINER_ID" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TRAINER_ID"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="TRAINER_ID"/>
+    </attribute>
+    <attribute id="BOOKING_DATE" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BOOKING_DATE"/>
+      <keyMapping columnObjectName="Projection_Fact" columnName="BOOKING_DATE"/>
+    </attribute>
+    <attribute id="CLASS_ID$local">
+      <keyMapping columnObjectName="Projection_Fact" columnName="CLASS_ID"/>
+    </attribute>
+    <attribute id="MEMBER_ID$local">
+      <keyMapping columnObjectName="Projection_Fact" columnName="MEMBER_ID"/>
+    </attribute>
+    <attribute id="TRAINER_ID$local">
+      <keyMapping columnObjectName="Projection_Fact" columnName="TRAINER_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="PRICE_1" order="7" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="PRICE_1"/>
+      <measureMapping columnObjectName="Projection_Fact" columnName="PRICE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="TRAINER_SHARE" order="8" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="TRAINER_SHARE"/>
+      <measureMapping columnObjectName="Projection_Fact" columnName="TRAINER_SHARE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+  <sharedDimensions>
+    <logicalJoin associatedObjectUri="CV_CLASSES_DIM">
+      <attributes>
+        <attributeRef>CLASS_ID$local</attributeRef>
+      </attributes>
+      <associatedAttributeNames>
+        <attributeName>CLASS_ID</attributeName>
+      </associatedAttributeNames>
+      <properties cardinality="CN_1" joinType="leftOuter" optimizeJoinColumns="true" joinOperator="Equal"/>
+      <associatedAttributeFeatures>
+        <attributeReference alias="CLASS_ID_CV_CLASSES_DIM" attributeName="CLASS_ID"/>
+        <attributeReference alias="CLASS_NAME_CV_CLASSES_DIM" attributeName="CLASS_NAME"/>
+        <attributeReference alias="CATEGORY_CV_CLASSES_DIM" attributeName="CATEGORY"/>
+        <attributeReference alias="PRICE_CV_CLASSES_DIM" attributeName="PRICE"/>
+        <attributeReference alias="CLASS_FULL_NAME_CV_CLASSES_DIM" attributeName="CLASS_FULL_NAME"/>
+        <attributeReference alias="PRICE_RANGE_CV_CLASSES_DIM" attributeName="PRICE_RANGE"/>
+      </associatedAttributeFeatures>
+    </logicalJoin>
+    <logicalJoin associatedObjectUri="CV_MEMBERS_DIM">
+      <attributes>
+        <attributeRef>MEMBER_ID$local</attributeRef>
+      </attributes>
+      <associatedAttributeNames>
+        <attributeName>MEMBERS_ID</attributeName>
+      </associatedAttributeNames>
+      <properties cardinality="CN_1" joinType="leftOuter" optimizeJoinColumns="true" joinOperator="Equal"/>
+      <associatedAttributeFeatures>
+        <attributeReference alias="MEMBERS_ID_CV_MEMBERS_DIM" attributeName="MEMBERS_ID"/>
+        <attributeReference alias="MEMBERS_NAME_CV_MEMBERS_DIM" attributeName="MEMBERS_NAME"/>
+        <attributeReference alias="MEMBERSHIP_TYPE_CV_MEMBERS_DIM" attributeName="MEMBERSHIP_TYPE"/>
+        <attributeReference alias="PRICE_CV_MEMBERS_DIM" attributeName="PRICE"/>
+        <attributeReference alias="NAME_CV_MEMBERS_DIM" attributeName="NAME"/>
+      </associatedAttributeFeatures>
+    </logicalJoin>
+    <logicalJoin associatedObjectUri="CV_TRAINERS_DIM">
+      <attributes>
+        <attributeRef>TRAINER_ID$local</attributeRef>
+      </attributes>
+      <associatedAttributeNames>
+        <attributeName>TRAINERS_ID</attributeName>
+      </associatedAttributeNames>
+      <properties cardinality="CN_1" joinType="leftOuter" optimizeJoinColumns="true" greedyJoinPruning="both" joinOperator="Equal"/>
+      <associatedAttributeFeatures>
+        <attributeReference alias="TRAINERS_ID_CV_TRAINERS_DIM" attributeName="TRAINERS_ID"/>
+        <attributeReference alias="TRAINERS_NAME_CV_TRAINERS_DIM" attributeName="TRAINERS_NAME"/>
+        <attributeReference alias="SPECIALIZATION_CV_TRAINERS_DIM" attributeName="SPECIALIZATION"/>
+        <attributeReference alias="NAME_CV_TRAINERS_DIM" attributeName="NAME"/>
+      </associatedAttributeFeatures>
+    </logicalJoin>
+  </sharedDimensions>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="83" y="105"/>
+    
+      <rectangleSize width="167"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_Fact" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="90" y="256"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Projection_Fact" modelObjectNameSpace="StarJoinViewNodeInput" modelObjectType="repository">
+      <upperLeftCorner x="292" y="32"/>
+      <rectangleSize width="198"/>
+    </shape>
+    <shape modelObjectName="CV_CLASSES_DIM" modelObjectNameSpace="StarJoinViewNodeSharedCV" modelObjectType="repository">
+      <upperLeftCorner x="16" y="64"/>
+      <rectangleSize width="212"/>
+    </shape>
+    <shape modelObjectName="CV_MEMBERS_DIM" modelObjectNameSpace="StarJoinViewNodeSharedCV" modelObjectType="repository">
+      <upperLeftCorner x="555" y="16"/>
+      <rectangleSize width="214"/>
+    </shape>
+    <shape modelObjectName="CV_TRAINERS_DIM" modelObjectNameSpace="StarJoinViewNodeSharedCV" modelObjectType="repository">
+      <upperLeftCorner x="555" y="169"/>
+      <rectangleSize width="199"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

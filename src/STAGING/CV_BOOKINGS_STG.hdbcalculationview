@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_BOOKINGS_STG" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" application="BAS" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="CV_BOOKINGS_STG"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="BOOKINGS">
+    <resourceUri>BOOKINGS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews/>
+<logicalModel id="BOOKINGS">
+  <attributes>
+    <attribute id="BOOKING_DATE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BOOKING_DATE"/>
+      <keyMapping columnObjectName="BOOKINGS" columnName="BOOKING_DATE"/>
+    </attribute>
+    <attribute id="STATUS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="BOOKINGS" columnName="STATUS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="ID" order="1" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="ID"/>
+      <measureMapping columnObjectName="BOOKINGS" columnName="ID"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="MEMBER_ID" order="2" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="MEMBER_ID"/>
+      <measureMapping columnObjectName="BOOKINGS" columnName="MEMBER_ID"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="CLASS_ID" order="3" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="CLASS_ID"/>
+      <measureMapping columnObjectName="BOOKINGS" columnName="CLASS_ID"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

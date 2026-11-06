@@ -1,0 +1,28 @@
+-- View: V_BOOKINGS_DAILY_DETAILS
+-- Purpose: Returns all bookings enriched with member information,
+-- end-of-month date and weekday name.
+-- Filter by date can be applied when querying the view.
+
+VIEW "V_BOOKINGS_DAILY_DETAILS" AS
+
+SELECT
+    b.ID                         AS BOOKING_ID,
+    b.BOOKING_DATE              AS BOOKING_DATE,
+    m.NAME                      AS MEMBER_NAME,
+    m.MEMBERSHIP_TYPE           AS MEMBERSHIP_TYPE,
+    b.STATUS                    AS BOOKING_STATUS,
+
+    YEAR(b.BOOKING_DATE)        AS BOOKING_YEAR,
+    MONTH(b.BOOKING_DATE)       AS BOOKING_MONTH,
+
+    LAST_DAY(b.BOOKING_DATE)    AS MONTH_END_DATE,
+
+    TO_VARCHAR(
+        b.BOOKING_DATE,
+        'DAY'
+    )                           AS WEEKDAY_NAME
+
+FROM BOOKINGS b
+
+INNER JOIN MEMBERS m
+    ON b.MEMBER_ID = m.ID;

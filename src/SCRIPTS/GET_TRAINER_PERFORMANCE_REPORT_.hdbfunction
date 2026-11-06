@@ -1,0 +1,44 @@
+FUNCTION "GET_TRAINER_PERFORMANCE_REPORT_"(
+    IN_CATEGORY      VARCHAR(50),
+    IN_MIN_BOOKINGS  INTEGER
+)
+RETURNS TABLE (
+    TRAINER_ID        INTEGER,
+    TRAINER_NAME       VARCHAR(100),
+    SPECIALIZATION     VARCHAR(100),
+    TOTAL_BOOKINGS     INTEGER,
+    TOTAL_REVENUE      DECIMAL(12,2),
+    TRAINER_COMMISSION DECIMAL(12,2),      -- через scalar function из Task 1!
+    PERFORMANCE_STATUS VARCHAR(20)
+)
+LANGUAGE SQLSCRIPT
+AS
+BEGIN
+    RETURN
+    SELECT
+        t.ID                              AS TRAINER_ID,
+        t.NAME                            AS TRAINER_NAME,
+        t.SPECIALIZATION,
+        COUNT(b.ID)                       AS TOTAL_BOOKINGS,
+        COALESCE(SUM(c.PRICE), 0)         AS TOTAL_REVENUE,
+
+        -- Интеграция функции из Task 1
+        "CALCULATE_TRAINER_COMMISSION"(COALESCE(SUM(c.PRICE), 0), 40.00) AS TRAINER_COMMISSION,
+
+        CASE
+            WHEN COUNT(b.ID) >= 3 THEN 'High Performer'
+            WHEN COUNT(b.ID) >= 1 THEN 'Active'
+            ELSE 'Inactive'
+        END AS PERFORMANCE_STATUS
+
+    FROM TRAINERS t
+    JOIN CLASSES c ON c.TRAINER_ID = t.ID
+    LEFT JOIN BOOKINGS b ON b.CLASS_ID = c.ID AND b.STATUS <> 'CANCELLED'
+
+    WHERE
+        (:IN_CATEGORY IS NULL OR c.CATEGORY = :IN_CATEGORY)
+
+    GROUP BY t.ID, t.NAME, t.SPECIALIZATION
+    HAVING COUNT(b.ID) >= :IN_MIN_BOOKINGS
+    ORDER BY TOTAL_REVENUE DESC;
+END;
